@@ -74,7 +74,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 pygments_style = None
 
 # TACC logo
-html_logo = 'images/TACC-White-No-Mask.png'
+html_logo = 'images/UCL-Advanced-Research-Computing-WHT.svg'
 
 # -- Options for HTML output -------------------------------------------------
 

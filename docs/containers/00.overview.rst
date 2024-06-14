@@ -4,7 +4,7 @@ Welcome to |workshop_name|!
 =============================
 
 In this section, we will be introduced to containers, their uses, and different
-existing container technologies. Our focus would be on one such container technology
+existing container technologies. Our focus will be on one such container technology
 called **Docker**.
 
 **Objectives for this session:**

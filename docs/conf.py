@@ -23,7 +23,7 @@ import sphinx_rtd_theme
 # -- Project information -----------------------------------------------------
 
 project = 'Containers-at-UCL-ARC'
-copyright = '2024, UCL Advanced Research Computing'
+copyright = '2024, UCL Advanced Research Computing; 2024, Texas Advanced Computing Center'
 author = 'UCL Advanced Research Computing'
 
 # The short X.Y version

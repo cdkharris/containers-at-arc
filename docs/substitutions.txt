@@ -1,3 +1,4 @@
+.. _Containers @ TACC : https://containers-at-tacc.readthedocs.io/en/latest/
 .. |workshop_name| replace:: Containers at UCL-ARC
 .. |site| replace:: UCL Research Computing
 .. |readthedocslink| replace:: Read the Docs

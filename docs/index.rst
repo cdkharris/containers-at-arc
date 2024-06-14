@@ -37,4 +37,4 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
-Adapted from [Containers @ TACC](https://containers-at-tacc.readthedocs.io/en/latest/).
+Adapted from `Containers @ TACC`_.

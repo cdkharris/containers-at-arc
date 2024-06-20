@@ -29,8 +29,15 @@
         </ul>
         
         <h2>Intro to Containers</h2>
-        
-        <p>Some text and images about containers.</p>
+
+        <p>At the end of this workshop you will have practiced:</p>
+
+        <ul>
+            <li>Capturing your code and requirements as a Docker recipe</li>
+            <li>Deploying your own code to run on your laptop and a HPC system</li>
+            <li>Using someone else's container both on your laptop and a HPC system</li>
+            <li>Publishing your code to DockerHub so that it can be shared with others</li>
+        </ul>
         
         <h2>Workshop Prerequisites</h2>
         
@@ -58,21 +65,108 @@
         
         <h2>Code Listings</h2>
         
-        <h3>pi.py</h3>
+        <h3>Using, Building, and Sharing Containers with Docker</h3>
+
+        <h4>pi.py</h4>
 
         <pre>
             <code>
-a formatted():
-  ```block```
-  of
-  return code
+#!/usr/bin/env python3
+from random import random as r
+from math import pow as p
+from sys import argv
 
-if ()
+# Make sure number of attempts is given on command line
+assert len(argv) == 2
+attempts = int(argv[1])
+inside = 0
+tries = 0
+
+# Try the specified number of random points
+while (tries < attempts):
+    tries +=1
+    if (p(r(),2) + p(r(),2) < 1):
+        inside +=1
+
+# Compute and print a final ratio
+print(f'Final pi estimate from {attempts} attempts={4.*(inside/tries)}' )
             </code>
         </pre>
     
+<!--         <h4>Dockerfile</h4>
 
+        <pre>
+            <code>
+FROM ubuntu:18.04
 
+RUN apt-get update && apt-get upgrade -y && apt-get install -y python3
+
+COPY pi.py /code/pi.py
+
+RUN chmod +rx /code/pi.py
+
+ENV PATH "/code:$PATH"
+            </code>
+        </pre> -->
+
+        <h4>pi.py with argparse</h4>
+
+        <pre>
+            <code>
+#!/usr/bin/env python3
+from random import random as r
+from math import pow as p
+from sys import argv
+
+# INSERT THIS BLOCK
+# Use argparse to take command line options and generate help text
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("number", help="number of random points (int)", type=int)
+args = parser.parse_args()
+# Grab number of attempts from command line
+attempts = args.number
+
+inside = 0
+tries = 0
+
+# Try the specified number of random points
+while (tries < attempts):
+    tries += 1
+    if (p(r(),2) + p(r(),2) < 1):
+        inside += 1
+
+# Compute and print a final ratio
+print( f'Final pi estimate from {attempts} attempts = {4*(inside/tries)}' )
+            </code>
+        </pre>
+
+        <h3>Using Containers on Myriad with Apptainer</h3>
+
+        <h4>pi.sh preamble</h4>
     
+        <pre>
+            <code>
+#!/bin/bash -l
+
+# Batch script to run a serial job under SGE.
+
+# Request ten minutes of wallclock time (format hours:minutes:seconds).
+#$ -l h_rt=0:10:0
+
+# Request 1 gigabyte of RAM (must be an integer followed by M, G, or T)
+#$ -l mem=1G
+
+# Set the name of the job.
+#$ -N calculate-pi
+
+# Set the working directory to somewhere in your scratch space.
+# This is a necessary step as compute nodes cannot write to $HOME.
+# Replace "YOUR_UCL_ID" with your UCL user ID.
+#$ -wd /home/YOUR_UCL_ID/Scratch/containers-at-arc
+
+# Enter the commands to run during the batch job below this line
+            </code>
+        </pre>
 </body>
 </html>

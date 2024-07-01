@@ -10,6 +10,8 @@ Prerequisites
 
   - `Mac <https://docs.docker.com/desktop/install/mac-install/>`_
   - `Windows <https://docs.docker.com/desktop/install/windows-install/>`_
+      - `Microsoft documentation on installing WSL <https://learn.microsoft.com/en-us/windows/wsl/install>`_
+      - `Microsoft documentation on installing Docker <https://learn.microsoft.com/en-us/windows/wsl/tutorials/wsl-containers>`_
   - Linux `Desktop <https://docs.docker.com/desktop/install/linux-install/>`_ or `Engine (CLI) <https://docs.docker.com/engine/install/>`_
 
 To check if the installation was successful, open up your favorite Terminal (Mac,Linux) or the Docker Terminal (Windows)

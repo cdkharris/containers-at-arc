@@ -20,21 +20,17 @@ Base Docker images
 
 When running at TACC, we have a set of curated Docker images for use in the FROM line of your own containers.  You can see a list of available images at `https://github.com/TACC/tacc-containers <https://github.com/TACC/tacc-containers>`_.
 
-+---------------------------------------+----------------------+----------------------+----------------------+----------------------+
-| Image                                 | Frontera             | Stampede2            | Lonestar6            | Local Dev            |
-+=======================================+======================+======================+======================+======================+
-| tacc/tacc-centos7-mvapich2.3-ib       | |:heavy_check_mark:| |                      | |:heavy_check_mark:| | |:heavy_check_mark:| |
-+---------------------------------------+----------------------+----------------------+----------------------+----------------------+
-| tacc/tacc-centos7-mvapich2.3-psm2     |                      | |:heavy_check_mark:| |                      |                      |
-+---------------------------------------+----------------------+----------------------+----------------------+----------------------+
-| tacc/tacc-centos7-impi19.0.7-common   | |:heavy_check_mark:| | |:heavy_check_mark:| | |:heavy_check_mark:| | |:heavy_check_mark:| |
-+---------------------------------------+----------------------+----------------------+----------------------+----------------------+
-| tacc/tacc-ubuntu18-mvapich2.3-ib      | |:heavy_check_mark:| |                      | |:heavy_check_mark:| | |:heavy_check_mark:| |
-+---------------------------------------+----------------------+----------------------+----------------------+----------------------+
-| tacc/tacc-ubuntu18-mvapich2.3-psm2    |                      | |:heavy_check_mark:| |                      |                      |
-+---------------------------------------+----------------------+----------------------+----------------------+----------------------+
-| tacc/tacc-ubuntu18-impi19.0.7-common  | |:heavy_check_mark:| | |:heavy_check_mark:| | |:heavy_check_mark:| | |:heavy_check_mark:| |
-+---------------------------------------+----------------------+----------------------+----------------------+----------------------+
++---------------------------------------+----------------------+----------------------+----------------------+
+| Image                                 | Frontera             | Lonestar6            | Local Dev            |
++=======================================+======================+======================+======================+
+| tacc/tacc-centos7-mvapich2.3-ib       | |:heavy_check_mark:| | |:heavy_check_mark:| | |:heavy_check_mark:| |
++---------------------------------------+----------------------+----------------------+----------------------+
+| tacc/tacc-centos7-impi19.0.7-common   | |:heavy_check_mark:| | |:heavy_check_mark:| | |:heavy_check_mark:| |
++---------------------------------------+----------------------+----------------------+----------------------+
+| tacc/tacc-ubuntu18-mvapich2.3-ib      | |:heavy_check_mark:| | |:heavy_check_mark:| | |:heavy_check_mark:| |
++---------------------------------------+----------------------+----------------------+----------------------+
+| tacc/tacc-ubuntu18-impi19.0.7-common  | |:heavy_check_mark:| | |:heavy_check_mark:| | |:heavy_check_mark:| |
++---------------------------------------+----------------------+----------------------+----------------------+
 
 .. Note::
 
@@ -86,12 +82,10 @@ Lets try computing Pi with 10,000,000 samples using 1 and 2 processors.
 .. code-block:: console
 
 	Run using 1 processor
-	$ docker run --rm -it USERNAME/pi-estimator:0.1-mpi \
-		mpirun -n 1 pi-mpi.py 10000000
+	$ docker run --rm USERNAME/pi-estimator:0.1-mpi mpirun -n 1 pi-mpi.py 10000000
 
 	Run using 2 processors
-	$ docker run --rm -it USERNAME/pi-estimator:0.1-mpi \
-		mpirun -n 2 pi-mpi.py 10000000
+	$ docker run --rm USERNAME/pi-estimator:0.1-mpi mpirun -n 2 pi-mpi.py 10000000
 
 You should notice that while the estimate stayed roughly the same, the execution time halved as the program scaled from one to two processors.
 
@@ -170,13 +164,13 @@ After pulling the container, the image file can be referred to in an sbatch scri
 
 	#!/bin/bash
 
-	#SBATCH -J calculate-pi-mpi                 # Job name
-	#SBATCH -o calculate-pi-mpi.%j              # Name of stdout output file (%j expands to jobId)
-	#SBATCH -p rtx                              # Queue name
-	#SBATCH -N 1                                # Total number of nodes requested (56 cores/node)
-	#SBATCH -n 8                                # Total number of mpi tasks requested
-	#SBATCH -t 00:10:00                         # Run time (hh:mm:ss)
-	#SBATCH --reservation Containers_training   # a reservation only active during the training
+	#SBATCH -J calculate-pi-mpi                  # Job name
+	#SBATCH -o calculate-pi-mpi.%j               # Name of stdout output file (%j expands to jobId)
+	#SBATCH -p rtx                               # Queue name
+	#SBATCH -N 1                                 # Total number of nodes requested (56 cores/node)
+	#SBATCH -n 8                                 # Total number of mpi tasks requested
+	#SBATCH -t 00:10:00                          # Run time (hh:mm:ss)
+	#SBATCH --reservation Containers-Fall24      # a reservation only active during the training
 
 	module load tacc-apptainer
 	cd $SCRATCH
@@ -251,7 +245,9 @@ For instance, the latest version of caffe can be used on TACC systems as follows
 
 As previously mentioned, the main requirement for GPU-enabled containers to work is that the version of the NVIDIA host driver on the system supports the version of the CUDA library inside the container.
 
-For a more exciting test, the latest version of Tensorflow can be tested as follows:
+For some more exciting examples, lets look at two of the most popular Deep Learning frameworks for Python, `Tensorflow <https://www.tensorflow.org/>`_ and `PyTorch <https://pytorch.org/>`_.
+
+First, we'll run a simple script (`tf_test.py <https://raw.githubusercontent.com/TACC/containers_at_tacc/master/docs/scripts/tf_test.py>`_) that uses Tensorflow to show the GPUs and then creates two tensors and multiplies them together. It can be tested as follows:
 
 .. code-block:: console
 
@@ -265,17 +261,120 @@ For a more exciting test, the latest version of Tensorflow can be tested as foll
   $ apptainer pull docker://tensorflow/tensorflow:latest-gpu
 
   Run the code
-  $ apptainer exec --nv tensorflow_latest-gpu.sif python tf_test.py
+  $ apptainer exec --nv tensorflow_latest-gpu.sif python tf_test.py 2>warnings.txt
+  Tensorflow version: 2.17.0
+  GPU available: True
+
+  GPUs:
+  Name: /physical_device:GPU:0   Type: GPU
+  Name: /physical_device:GPU:1   Type: GPU
+  Name: /physical_device:GPU:2   Type: GPU
+  Name: /physical_device:GPU:3   Type: GPU
+
+  TNA= tf.Tensor(
+  [[1. 2. 3.]
+  [4. 5. 6.]], shape=(2, 3), dtype=float32)
+  TNB= tf.Tensor(
+  [[1. 2.]
+  [3. 4.]
+  [5. 6.]], shape=(3, 2), dtype=float32)
+  TNAxTNB= tf.Tensor(
+  [[22. 28.]
+  [49. 64.]], shape=(2, 2), dtype=float32)
 
 .. Note::
 
 	If you would like avoid the wordy tensorflow warning messages, run the above command and
 	redirect STDERR to a file (i.e. ``2>warnings.txt``).
 
+Next, we'll look at another example of matrix multiplication using PyTorch (`pytorch_matmul_scaling_test.py <https://raw.githubusercontent.com/TACC/containers_at_tacc/master/docs/scripts/pytorch_matmul_scaling_test.py>`_) where we'll show how long it takes to multiply increasingly bigger matrices using both the CPU and GPU.
+It can be tested as follows:
+
+.. code-block:: console
+
+  Change to your $SCRATCH directory
+  $ cd $SCRATCH
+
+  Download the test code
+  $ wget https://raw.githubusercontent.com/TACC/containers_at_tacc/master/docs/scripts/pytorch_matmul_scaling_test.py
+
+  Pull the image
+  $ apptainer pull docker://eriksf/pytorch:2.4.1-cuda12.1-cudnn9-runtime
+
+  Run the code against the CPU
+  $ apptainer exec --nv pytorch_2.4.1-cuda12.1-cudnn9-runtime.sif python pytorch_matmul_scaling_test.py --no-gpu
+  INFO:    gocryptfs not found, will not be able to use gocryptfs
+  PyTorch Matrix Multiplication Test for Large Matrices
+  PyTorch version: 2.4.1+cu121
+  Using device: cpu
+
+  Running test for matrix size: 2048x2048
+  Estimated memory requirement: 0.03 GB
+
+  Running test for matrix size: 4096x4096
+  Estimated memory requirement: 0.12 GB
+
+  Running test for matrix size: 8192x8192
+  Estimated memory requirement: 0.50 GB
+                   Matrix Multiplication Test Results
+  ┏━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┓
+  ┃ Matrix Size ┃ Memory Size (GB) ┃ Computation Time (s) ┃ Performance  ┃
+  ┡━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━┩
+  │ 2048x2048   │ 0.03             │ 0.1995               │ 86.13 GFLOPS │
+  │ 4096x4096   │ 0.12             │ 1.5595               │ 88.13 GFLOPS │
+  │ 8192x8192   │ 0.50             │ 12.4375              │ 88.40 GFLOPS │
+  └─────────────┴──────────────────┴──────────────────────┴──────────────┘
+  Scaling plot saved as 'scaling_plot.png'
+
+The script also produces a scaling plot:
+
+.. figure:: ../images/scaling_plot_cpu.png
+  :align: center
+
+  Scaling plot for CPU
+
+.. code-block:: console
+
+  Run the code against the GPU
+  $ apptainer exec --nv pytorch_2.4.1-cuda12.1-cudnn9-runtime.sif python pytorch_matmul_scaling_test.py
+  INFO:    gocryptfs not found, will not be able to use gocryptfs
+  PyTorch Matrix Multiplication Test for Large Matrices
+  PyTorch version: 2.4.1+cu121
+  Using device: cuda
+  CUDA version: 12.1
+  GPU: Quadro RTX 5000
+  GPU Memory: 15.74 GB
+
+  Running test for matrix size: 2048x2048
+  Estimated memory requirement: 0.03 GB
+
+  Running test for matrix size: 4096x4096
+  Estimated memory requirement: 0.12 GB
+
+  Running test for matrix size: 8192x8192
+  Estimated memory requirement: 0.50 GB
+                  Matrix Multiplication Test Results
+  ┏━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┓
+  ┃ Matrix Size ┃ Memory Size (GB) ┃ Computation Time (s) ┃ Performance ┃
+  ┡━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━┩
+  │ 2048x2048   │ 0.03             │ 0.0037               │ 4.67 TFLOPS │
+  │ 4096x4096   │ 0.12             │ 0.0288               │ 4.78 TFLOPS │
+  │ 8192x8192   │ 0.50             │ 0.2252               │ 4.88 TFLOPS │
+  └─────────────┴──────────────────┴──────────────────────┴─────────────┘
+  Scaling plot saved as 'scaling_plot.png'
+
+The script also produces a scaling plot:
+
+.. figure:: ../images/scaling_plot.png
+  :align: center
+
+  Scaling plot for GPU
+
+
 Building a GPU aware container
 ------------------------------
 
-In the previous two examples, we have used pre-built containers to test GPU capability. Here we are going to build a GPU aware container
+In the previous couple of examples, we have used pre-built containers to test GPU capability. Here we are going to build a GPU aware container
 to do some NLP/Text classification with the `BERT <https://arxiv.org/abs/1810.04805>`_ transformer model using PyTorch. We are going to
 use one of the TACC base images (tacc/tacc-ml:centos7-cuda10-tf2.4-pt1.7) as a starting point.
 
@@ -320,7 +419,7 @@ test that the program help works.
 
 .. code-block:: console
 
-   $ docker run --rm -it eriksf/bert-classifier:0.0.1 bert_classifier.py -h
+   $ docker run --rm eriksf/bert-classifier:0.0.1 bert_classifier.py -h
    usage: bert_classifier.py [-h] [-d DEVICE] [-o OUTPUT] [-s SOURCE]
 
    optional arguments:
@@ -352,14 +451,72 @@ Once you have your node, pull the container and run it as follows:
 
 .. code-block:: console
 
-	Load apptainer module
-	$ module load tacc-apptainer
+  Load apptainer module
+  $ module load tacc-apptainer
 
-	Change to $SCRATCH directory
-	$ cd $SCRATCH
+  Change to $SCRATCH directory
+  $ cd $SCRATCH
 
-	Pull container
-	$ apptainer pull docker://USERNAME/bert-classifier:0.0.1
+  Pull container
+  $ apptainer pull docker://USERNAME/bert-classifier:0.0.1
 
-	Run container
-	$ apptainer exec --nv bert-classifier_0.0.1.sif bert_classifier.py
+  Run container
+  $ apptainer exec --nv bert-classifier_0.0.1.sif bert_classifier.py
+  Building tokenizer from 'bert-base-uncased'
+  Creating tabular datasets
+  Building iterators
+  Creating BERT model
+  Start Training...
+  Epoch [1/5], Step [16/160], Train Loss: 0.7057, Valid Loss: 0.6338
+  Model saved to ==> ./model.pt
+  Model saved to ==> ./metrics.pt
+  Epoch [1/5], Step [32/160], Train Loss: 0.5145, Valid Loss: 0.5349
+  Model saved to ==> ./model.pt
+  Model saved to ==> ./metrics.pt
+  Epoch [2/5], Step [48/160], Train Loss: 0.3584, Valid Loss: 0.3270
+  Model saved to ==> ./model.pt
+  Model saved to ==> ./metrics.pt
+  Epoch [2/5], Step [64/160], Train Loss: 0.2293, Valid Loss: 0.2806
+  Model saved to ==> ./model.pt
+  Model saved to ==> ./metrics.pt
+  Epoch [3/5], Step [80/160], Train Loss: 0.1833, Valid Loss: 0.2833
+  Epoch [3/5], Step [96/160], Train Loss: 0.1146, Valid Loss: 0.2951
+  Epoch [4/5], Step [112/160], Train Loss: 0.1379, Valid Loss: 0.2406
+  Model saved to ==> ./model.pt
+  Model saved to ==> ./metrics.pt
+  Epoch [4/5], Step [128/160], Train Loss: 0.0681, Valid Loss: 0.2019
+  Model saved to ==> ./model.pt
+  Model saved to ==> ./metrics.pt
+  Epoch [5/5], Step [144/160], Train Loss: 0.0378, Valid Loss: 0.3387
+  Epoch [5/5], Step [160/160], Train Loss: 0.0180, Valid Loss: 0.2925
+  Model saved to ==> ./metrics.pt
+  Finished Training!
+  Model loaded from <== ./metrics.pt
+  Plot of loss vs. global steps saved as loss_v_global_steps.png
+  Evaluating the model
+  Model loaded from <== ./model.pt
+  Classification Report:
+                precision    recall  f1-score   support
+
+             1     0.9590    0.8810    0.9184      2816
+             0     0.8913    0.9629    0.9257      2854
+
+      accuracy                         0.9222      5670
+     macro avg     0.9252    0.9219    0.9220      5670
+  weighted avg     0.9250    0.9222    0.9221      5670
+
+  Confusion matrix saved as confusion_matrix.png
+
+The classifier script also produces a plot of the loss vs. global steps
+
+.. figure:: ../images/loss_v_global_steps.png
+  :align: center
+
+  Loss vs. Global Steps
+
+and a confusion matrix
+
+.. figure:: ../images/confusion_matrix.png
+  :align: center
+
+  Confusion Matrix

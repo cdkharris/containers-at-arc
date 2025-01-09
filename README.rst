@@ -1,6 +1,8 @@
 Containers at ARC Workshop
 ==========================
 
+This repo has been archived. I'm now working on the lesson from this repo: https://github.com/UCL-ARC/containers-at-arc
+
 |docs|
 
 Course material at `Read the Docs`_
